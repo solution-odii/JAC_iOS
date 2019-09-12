@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:jac/Constants/mycolors.dart';
 import 'package:jac/Screens/loginScreen.dart';
 import 'package:provider/provider.dart';
-import '../Providers/sigupbackend.dart';
+import '../Providers/AuthenticationBackend.dart';
+import 'package:jac/Constants/constants.dart';
+import 'package:jac/Models/carsList.dart';
+import 'package:quiver/strings.dart';
 
 class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           Container(
@@ -37,7 +43,10 @@ class RegisterScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Icon(Icons.arrow_back_ios, color: Colors.white,),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 120.0),
@@ -49,6 +58,7 @@ class RegisterScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+
                 RegisterForm()
               ],
             ),
@@ -67,6 +77,8 @@ class RegisterForm extends StatefulWidget {
 }
 
 class RegisterFormState extends State<RegisterForm> {
+
+
   Map<String, String> _authData = {
     'firstName': '',
     'lastName': '',
@@ -76,56 +88,60 @@ class RegisterFormState extends State<RegisterForm> {
     'plateNumber': '',
     'password': '',
   };
-
+  String selectedVehicle;
   var isLoading = false;
   final _passwordController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey();
+  var passKey = GlobalKey<FormFieldState>();
+
   Future<void> _submit() async {
-    if (!_formKey.currentState.validate()) {}
+    if (!_formKey.currentState.validate()) {
+    } else {
+      _formKey.currentState.save();
+      setState(() {
+        isLoading = true;
+      });
 
-    _formKey.currentState.save();
-    setState(() {
-      isLoading = true;
-    });
+      await Provider.of<AuthenticateBackend>(context, listen: false).signUpFetch(
+          context,
+        _authData['firstName'],
+        _authData['lastName'],
+        _authData['email'],
+        _authData['phoneNumber'],
+        _authData['vehicleModel'],
+        _authData['plateNumber'],
+        _authData['password'],
+      );
 
-    await Provider.of<SignUpAuth>(context, listen: false).signup(
-      _authData['firstName'],
-      _authData['lastName'],
-      _authData['email'],
-      _authData['phoneNumber'],
-      _authData['vehicleModel'],
-      _authData['plateNumber'],
-      _authData['password'],
-    );
-
-    setState(() {
-      isLoading = false;
-    });
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
+    CarListTypes vehicle = Constants.carListType;
+
     final firstNameField = TextFormField(
         keyboardType: TextInputType.text,
         cursorColor: Colors.white,
         style: TextStyle(color: Colors.white),
-        //  validator: (value) {
-        //             if (value.isEmpty) {
-        //               return 'Please Enter Name';
-        //             }
-
-        //           },
-
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'Please Enter Name';
+          }
+          return null;
+        },
         onSaved: (value) {
           _authData['firstName'] = value;
         },
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          
-          labelText: 'First Name',
-          
-          labelStyle: TextStyle(color: Colors.white),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 15.0),
+          hintText: 'First Name',
+          hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none,
         ));
 
@@ -133,20 +149,19 @@ class RegisterFormState extends State<RegisterForm> {
       keyboardType: TextInputType.text,
       cursorColor: Colors.white,
       style: TextStyle(color: Colors.white),
-      //  validator: (value) {
-      //   if (value.isEmpty) {
-      //     return 'Please Enter Last Name';
-      //   }
-      // },
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please Enter Last Name';
+        }
+        return null;
+      },
       onSaved: (value) {
         _authData['lastName'] = value;
       },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          
-          labelText: 'Last Name',
-          
-          labelStyle: TextStyle(color: Colors.white),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 15.0),
+          hintText: 'Last Name',
+          hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none),
     );
 
@@ -154,20 +169,23 @@ class RegisterFormState extends State<RegisterForm> {
       keyboardType: TextInputType.emailAddress,
       cursorColor: Colors.white,
       style: TextStyle(color: Colors.white),
-      // validator: (value) {
-      //   if (value.isEmpty || !value.contains('@')) {
-      //     return 'Invalid Email';
-      //   }
-      // },
+      validator: (value) {
+        if (value.isEmpty || !value.contains('@')) {
+          return 'Invalid Email';
+        }
+        return null;
+      },
       onSaved: (value) {
         _authData['email'] = value;
       },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          
-          labelText: 'Email',
-          labelStyle: TextStyle(color: Colors.white),
-        
+          contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 15.0),
+//          icon: Padding(
+//            padding: const EdgeInsets.fromLTRB(15.0, 15.0, 0.0, 15.0),
+//            child: Icon(Icons.alternate_email, color: Colors.white),
+//          ),
+          hintText: 'Email',
+          hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none),
     );
 
@@ -175,42 +193,50 @@ class RegisterFormState extends State<RegisterForm> {
       keyboardType: TextInputType.number,
       cursorColor: Colors.white,
       style: TextStyle(color: Colors.white),
-      //  validator: (value) {
-      //   if (value.isEmpty) {
-      //     return 'Please Enter Phone Number';
-      //   }
-      // },
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please Enter Phone Number';
+        }
+        return null;
+      },
       onSaved: (value) {
         _authData['phoneNumber'] = value;
       },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          
-          labelText: 'Phone Number',
-        
-          labelStyle: TextStyle(color: Colors.white),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 15.0),
+          hintText: 'Phone Number',
+          hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none),
     );
 
-    final vehicleModel = TextFormField(
-      keyboardType: TextInputType.text,
-      cursorColor: Colors.white,
-      style: TextStyle(color: Colors.white),
-      //  validator: (value) {
-      //   if (value.isEmpty) {
-      //     return 'Pls Enter Vehicle Model';
-      //   }
-      // },
-      onSaved: (value) {
-        _authData['vehicleModel'] = value;
+
+    final vehicleModel = DropdownButtonFormField<String>(
+      value: selectedVehicle,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Enter Vehicle Type';
+        }
+        return null;
       },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          
-          labelText: 'Vehicle Model (Optional)',
-          
-          labelStyle: TextStyle(color: Colors.white),
-          border: InputBorder.none),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 15.0),
+          hintText: 'Vehicle Type',
+          hintStyle: TextStyle(color: Colors.white),
+      ),
+
+      items: vehicle.carListTypes.map((carTypes) => DropdownMenuItem<String>(
+          value: carTypes.id,
+          child: Text(carTypes.description, style: TextStyle(color:  MyColors.designColor),),
+        )).toList(),
+
+      onChanged: (String newValue) {
+        setState(() {
+          selectedVehicle = newValue;
+        });
+      },
+      onSaved: (value) {
+        _authData['vehicleModel'] = value.toString();
+      },
     );
 
     final plateNumber = TextFormField(
@@ -221,54 +247,53 @@ class RegisterFormState extends State<RegisterForm> {
         _authData['plateNumber'] = value;
       },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          
-          labelText: 'Plate Number (Optional)',
-          
-          labelStyle: TextStyle(color: Colors.white),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 15.0),
+          hintText: 'Plate Number (Optional)',
+          hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none),
     );
 
     final password = TextFormField(
+      key: passKey,
       keyboardType: TextInputType.text,
       cursorColor: Colors.white,
       obscureText: true,
+      style: TextStyle(color: Colors.white),
       controller: _passwordController,
-      //  validator: (value) {
-      //   if (value.isEmpty || value.length < 4) {
-      //     return 'Password too Short';
-      //   }
-      // },
+      validator: (value) {
+        if (value.isEmpty || value.length < 4) {
+          return 'Password too Short';
+        }
+        return null;
+      },
       onSaved: (value) {
         _authData['password'] = value;
       },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-         
-          labelText: 'Password',
-          //icon: Icon(Icons.remove_red_eye, color: Colors.black, ),
-          
-          labelStyle: TextStyle(color: Colors.white),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 15.0),
+          hintText: 'Password',
+          hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none),
     );
 
     final confirmPassword = TextFormField(
       keyboardType: TextInputType.text,
-      cursorColor: Colors.black,
+      cursorColor: Colors.white,
       style: TextStyle(color: Colors.white),
       obscureText: true,
-      //  validator: (value) {
-      //   if (value != _passwordController) {
-      //     return 'Password does not match';
-      //   }
-      // },
 
+      validator: (confirmPassword) {
+        if (confirmPassword.isEmpty) return 'Enter confirm password';
+        var password = passKey.currentState.value;
+        if (!equalsIgnoreCase(confirmPassword, password))
+          return 'Confirm Password invalid';
+
+        return null;
+      },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          
-          labelText: 'Confirm Password',
-          
-          labelStyle: TextStyle(color: Colors.white),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 15.0),
+          hintText: 'Confirm Password',
+          hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none),
     );
 
@@ -283,91 +308,137 @@ class RegisterFormState extends State<RegisterForm> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                height: 30.0,
+                height: 15.0,
               ),
-              Container(
-                  height: 55.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.white)),
-                  child: firstNameField),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                    height: 55.0,
+                    decoration: BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(color: Colors.white, style: BorderStyle.solid),
+                      ),
+                    ),
+                    child: firstNameField),
+              ),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
               ),
-              Container(
-                  height: 55.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.white)),
-                  child: lastName),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                    height: 55.0,
+                    decoration: BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(color: Colors.white, style: BorderStyle.solid),
+                      ),
+                    ),
+                    child: lastName),
+              ),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
               ),
-              Container(
-                  height: 55.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.white)),
-                  child: emailField),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                    height: 55.0,
+                    decoration: BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(color: Colors.white, style: BorderStyle.solid),
+                      ),
+                    ),
+                    child: emailField),
+              ),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
               ),
-              Container(
-                  height: 55.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.white)),
-                  child: phoneNumber),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                    height: 55.0,
+                    decoration: BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(color: Colors.white, style: BorderStyle.solid),
+                      ),
+                    ),
+                    child: phoneNumber),
+              ),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
               ),
-              Container(
-                  height: 55.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.white)),
-                  child: vehicleModel),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                    height: 55.0,
+                    decoration: BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(color: Colors.white, style: BorderStyle.solid),
+                      ),
+                    ),
+                    child: vehicleModel),
+              ),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
               ),
-              Container(
-                  height: 55.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.white)),
-                  child: plateNumber),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                    height: 55.0,
+                    decoration: BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(color: Colors.white, style: BorderStyle.solid),
+                      ),
+                    ),
+                    child: plateNumber),
+              ),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
               ),
-              Container(
-                  height: 55.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.white)),
-                  child: password),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                    height: 55.0,
+                    decoration: BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(color: Colors.white, style: BorderStyle.solid),
+                      ),
+                    ),
+                    child: password),
+              ),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
               ),
-              Container(
-                  height: 55.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.white)),
-                  child: confirmPassword),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                    height: 55.0,
+                    decoration: BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(color: Colors.white, style: BorderStyle.solid),
+                      ),
+                    ),
+                    child: confirmPassword),
+              ),
               SizedBox(
                 height: 20.0,
               ),
               if (isLoading)
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                  backgroundColor: MyColors.designColor,
+                  valueColor:
+                  new AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+
               else
-                RaisedButton(
+                MaterialButton(
+                  height: 50.0,
                   onPressed: () {
                     _submit();
                   },
-                  child: Text('Sign Up', style: TextStyle(color: Colors.white)),
-                  color: Colors.pinkAccent,
+                  child: Text('SIGN UP', style: TextStyle(color: Colors.white, fontSize: 16.0)),
+                  color: MyColors.designColor,
                   padding: EdgeInsets.symmetric(
-                    horizontal: 92.0,
+                    horizontal: 82.0,
                   ),
                   elevation: 5.0,
                   shape: RoundedRectangleBorder(
@@ -377,34 +448,34 @@ class RegisterFormState extends State<RegisterForm> {
                   ),
                 ),
               SizedBox(
-                height: 0.0,
+                height: 10.0,
               ),
-              
-                
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'Already registered?',
-                      style: TextStyle(color: Colors.white, fontSize: 16.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Already registered?',
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      ' Sign In',
+                      style: TextStyle(
+                          color: MyColors.designColor,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold),
                     ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        ' Sign In',
-                        style: TextStyle(color: Colors.pinkAccent, fontSize: 18.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              
+                  ),
+                ],
+              ),
               SizedBox(
                 height: 30.0,
               ),

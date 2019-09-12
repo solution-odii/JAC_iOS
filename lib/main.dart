@@ -1,9 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:jac/Providers/sigupbackend.dart';
+import 'package:jac/Providers/AuthenticationBackend.dart';
 import 'package:jac/Screens/loginScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:jac/Providers/CarListBackend.dart';
+import 'package:jac/Constants/constants.dart';
+
+import 'Providers/BookingHistoryBackend.dart';
+import 'Providers/CarServiceBookingBackend.dart';
+import 'Providers/CarServiceCentersBackend.dart';
+import 'Providers/RepairBookingBackend.dart';
 
 
 void main (){
@@ -16,12 +23,29 @@ class MyApp extends StatelessWidget{
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
-          value: SignUpAuth(),
-        )
+          value: AuthenticateBackend(),
+        ),
+        ChangeNotifierProvider.value(
+          value: CarListFetchBackend()
+        ),
+        ChangeNotifierProvider.value(
+            value: ServiceCenterBackend()
+        ),
+        ChangeNotifierProvider.value(
+            value: BookRepairBackend()
+        ),
+        ChangeNotifierProvider.value(
+            value: BookCarServiceBackend()
+        ),
+        ChangeNotifierProvider.value(
+            value: BookingHistoryBackend()
+        ),
       ],
         child: new MaterialApp(
       
       title: 'JAC',
+      theme: ThemeData(fontFamily: 'Muli'),
+    darkTheme: ThemeData.dark(),
       home: new SplashScreen(),
 
       routes: <String, WidgetBuilder>{
@@ -41,22 +65,36 @@ class SplashScreen extends StatefulWidget{
   }
 
   class SplashScreenState extends State<SplashScreen>{
-  
-  startTime() async {
-    var duration = new Duration(seconds: 5);
-    return new Timer(duration, navigationPage);
+
+  fetch(){
+      CarListFetchBackend.carListFetch(context);
+
   }
 
-  void navigationPage(){
 
-    Navigator.of(context).pushReplacementNamed('/HomeScreen');
 
+  void showErrorDialog (BuildContext context, String message){
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Notification'),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Okay'),
+              onPressed: (){
+                Navigator.of(ctx).pop();
+              },
+            )
+          ],
+        )
+    );
   }
 
   @override
   void initState(){
     super.initState();
-    startTime();
+    fetch();
   }
   
   @override
