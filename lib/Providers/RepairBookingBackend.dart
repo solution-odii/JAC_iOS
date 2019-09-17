@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jac/Constants/constants.dart';
 
 class BookRepairBackend with ChangeNotifier {
 
@@ -15,15 +16,14 @@ class BookRepairBackend with ChangeNotifier {
       String serviceUsername,
       String vehicleBrand,
       String vehicleType) async {
-    const url_test =
-        "http://10.2.2.47:7080/api/customer/book";
+    final url = Constants.baseURL+'/api/customer/book';
 
     var response;
     var resp;
 
     try {
       response = await http.post(
-        url_test,
+        url,
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: jsonEncode({
           'customerId': customerId,

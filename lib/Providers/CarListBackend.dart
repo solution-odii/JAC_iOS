@@ -12,7 +12,7 @@ class CarListFetchBackend with ChangeNotifier {
 
 
   static Future <CarListTypes> carListFetch(BuildContext context) async{
-    const url_test = "http://10.2.2.47:7080/api/customer/car/model";
+    final url = Constants.baseURL+'/api/customer/car/model';
 
     CarListTypes carListTypes;
     var response;
@@ -20,7 +20,7 @@ class CarListFetchBackend with ChangeNotifier {
 
 
     try {
-      response = await http.get(url_test, headers: {"Accept": "application/json"});
+      response = await http.get(url, headers: {"Accept": "application/json"});
 
       print(response.body);
     } catch (error) {

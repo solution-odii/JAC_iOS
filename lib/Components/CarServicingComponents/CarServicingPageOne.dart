@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageFour.dart';
 import 'package:jac/Constants/mycolors.dart';
 import 'package:jac/Providers/CarServiceBookingBackend.dart';
+import 'package:jac/Utils/DialogUtil.dart';
+import 'package:jac/Utils/Loader.dart';
 import 'package:provider/provider.dart';
 
 import 'CarServicingPageTwo.dart';
@@ -16,7 +19,7 @@ class CarServicingPageOne extends StatefulWidget{
   }
 }
 
-class CarServicingPageOneState extends State<CarServicingPageOne>{
+class CarServicingPageOneState extends State<CarServicingPageOne> with TickerProviderStateMixin{
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
 
@@ -26,12 +29,14 @@ class CarServicingPageOneState extends State<CarServicingPageOne>{
   String selectedServicingType;
 
   static int userID;
-  static String recommendedService;
+  static String recommendedService = 'Recommended Service';
 
   List<String> typesOfService = ['First Service', 'Quick Service', 'Periodic Service'];
-
-
   var formatter = new DateFormat('yyyy-MM-dd');
+  var formaTime = new DateFormat.Hm();
+
+
+
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -84,6 +89,28 @@ class CarServicingPageOneState extends State<CarServicingPageOne>{
     );
   }
 
+  validationChecks()async{
+    if(dateGet == null){
+      Utils().showErrorDialog(context, 'Please Select Date');
+    }else  if(timeGet == null){
+      Utils().showErrorDialog(context, 'Please Select Time');
+    }else  if(mileage == null){
+      Utils().showErrorDialog(context, 'Please Enter Mileage');
+    }else  if(selectedServicingType == null){
+      Utils().showErrorDialog(context, 'Please Select Type of Service');
+    } else{
+      Utils().openDialog(LoaderTwo(), context);
+      await   Future.delayed(const Duration(milliseconds: 1000), () {
+        setState(() {
+          Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => CarServicingPageTwo()));
+        });
+      });
+
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     if(recommendedService==null){
@@ -101,281 +128,288 @@ class CarServicingPageOneState extends State<CarServicingPageOne>{
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: new AssetImage(
-                  "assets/images/group_1099.png",
+                  "assets/images/group_1328.png",
                 ),
                 fit: BoxFit.cover,
               ),
             ),
           ),
 
-          Center(
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 40.0,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0, top: 10.0),
-                  child: Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        child: Icon(Icons.arrow_back, size: 30.0),
-                        onTap: (){
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
+          SingleChildScrollView(
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 40.0,
                   ),
-                ),
-
-                Center(
-                  child: Text(
-                    'Car Servicing',
-                    style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
-                  ),
-                ),
-
-
-
-                SingleChildScrollView(
-                  child: Container(
-                    child: Column(
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0, top: 10.0),
+                    child: Row(
                       children: <Widget>[
-                        SizedBox(
-                          height: 0.0,
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0,
-                          right: 10.0,
-                          top: 20.0,
-                          bottom: 0.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-
-                              InkWell(
-                                child: Container(
-                                  height: 50.0,
-                                  width: 178,
-                                  decoration: BoxDecoration(
-                                    //shape: BoxShape.rectangle,
-                                    color: Color(0xff393636),
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(15.0),
-                                        topRight: Radius.circular(0.0),
-                                        bottomLeft: Radius.circular(15.0),
-                                        bottomRight: Radius.circular(0.0) ),
-
-                                    border: Border.all(color: Colors.black),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: <Widget>[
-                                      Text(
-                                        '${DateFormat.yMMMd().format(selectedDate)}',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w200,
-                                            fontSize: 19.0),
-
-                                      ),
-
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        color: Colors.white,
-                                      ),
-
-                                    ],
-                                  ),
-                                ),
-                                onTap: () => _selectDate(context),
-                              ),
-
-                              SizedBox(
-                                width: 2.0,
-                              ),
-
-
-                              InkWell(
-                                child: Container(
-                                  height: 50.0,
-                                  width: 168,
-                                  decoration: BoxDecoration(
-                                    //shape: BoxShape.rectangle,
-                                    color: Color(0xff393636),
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(0.0),
-                                        topRight: Radius.circular(15.0),
-                                        bottomLeft: Radius.circular(0.0),
-                                        bottomRight: Radius.circular(15.0) ),
-                                    border: Border.all(color: Colors.black),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: <Widget>[
-
-                                      Text(
-                                        '${selectedTime.format(context)}',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w200,
-                                            fontSize: 19.0),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        color: Colors.white,
-                                      ),
-
-                                    ],
-                                  ),
-                                ),
-                                onTap: () => _selectTime(context),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(
-                          height: 0.0,
-                        ),
-
-
-                        Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Center(
-                            child: Container(
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                color: Color(0xfff7f7f7),
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(color: Colors.black12),
-                              ),
-                              child: TextField(
-                                onChanged: (value){
-                                  mileage = value;
-                                  submitMile();
-
-                                  CarServicingPageFour.mileage =value;
-                                },
-                                cursorColor: MyColors.designColor,
-                                keyboardType: TextInputType.number,
-                                maxLines: null,
-                                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),
-                                decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(10.0),
-                                  hintText: 'Input car mileage',
-                                  hintStyle: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        Center(
-                          child: Text(
-                            'Recommended',
-                            style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w200),
-                          ),
-                        ),
-
-                        Center(
-                          child: Text(
-
-                            recommendedService.toString(),
-                            style: TextStyle(color: MyColors.designColor, fontSize: 22.0, fontWeight: FontWeight.w700),
-                          ),
-                        ),
-
-
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(25.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Color(0xfffab0b3),
-
-                                  borderRadius: BorderRadius.circular(15.0)
-                              ),
-                              child: DropdownButtonFormField<String>(
-                                  value: selectedServicingType,
-
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'Select Servicing Type';
-                                    }
-                                    return null;
-                                  },
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                                    hintText: 'Select Type of Servicing',
-                                    hintStyle: TextStyle(color: Colors.black),
-                                    border: InputBorder.none,
-
-
-                                  ),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      selectedServicingType = newValue;
-                                      print(selectedServicingType);
-
-                                      CarServicingPageFour.selectedTypeOfServicing = selectedServicingType;
-
-                                    });
-                                  },
-                                  items: typesOfService.map((serviceType) {
-                                    return DropdownMenuItem(
-                                      value: serviceType,
-                                      child: Text(
-                                        serviceType,
-                                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                                      ),
-
-                                    );
-                                  }).toList()),
-                            ),
-                          ),
-                        ),
-
-
-
-
-                        SizedBox(
-                          height: 20.0,
-                        ),
-
-                        MaterialButton(
-                          height: 50.0,
-                          onPressed: () {
-                           Navigator.push(context, MaterialPageRoute(builder: (context) => CarServicingPageTwo()));
+                        GestureDetector(
+                          child: Icon(Icons.arrow_back, size: 30.0),
+                          onTap: (){
+                            Navigator.pop(context);
                           },
-                          child: Text('Pick a Service',
-                              style: TextStyle(color: Colors.white, fontSize: 20.0)),
-                          color: MyColors.designColor,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 102.0,
-                          ),
-                          elevation: 5.0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(30.0),
-                            ),
-                          ),
                         ),
-
-
-
                       ],
                     ),
                   ),
-                ),
+
+                  Center(
+                    child: Text(
+                      'Car Servicing',
+                      style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
+                    ),
+                  ),
 
 
-              ],
+
+                  SingleChildScrollView(
+                    child: Container(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 0.0,
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10.0,
+                            right: 10.0,
+                            top: 20.0,
+                            bottom: 0.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+
+                                InkWell(
+                                  child: Container(
+                                    height: 50.0,
+                                    //width: 150,
+                                    decoration: BoxDecoration(
+                                      //shape: BoxShape.rectangle,
+                                      color: Color(0xff393636),
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(15.0),
+                                          topRight: Radius.circular(0.0),
+                                          bottomLeft: Radius.circular(15.0),
+                                          bottomRight: Radius.circular(0.0) ),
+
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            '${DateFormat.yMMMd().format(selectedDate)}',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w200,
+                                                fontSize: 19.0),
+
+                                          ),
+                                        ),
+
+                                        Icon(
+                                          Icons.arrow_drop_down,
+                                          color: Colors.white,
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+                                  onTap: () => _selectDate(context),
+                                ),
+
+                                SizedBox(
+                                  width: 2.0,
+                                ),
+
+
+                                InkWell(
+                                  child: Container(
+                                    height: 50.0,
+                                    decoration: BoxDecoration(
+                                      //shape: BoxShape.rectangle,
+                                      color: Color(0xff393636),
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(0.0),
+                                          topRight: Radius.circular(15.0),
+                                          bottomLeft: Radius.circular(0.0),
+                                          bottomRight: Radius.circular(15.0) ),
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            '${selectedTime.format(context)}',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w200,
+                                                fontSize: 19.0),
+                                          ),
+                                        ),
+                                        SizedBox(width: 30,),
+                                        Icon(
+                                          Icons.arrow_drop_down,
+                                          color: Colors.white,
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+                                  onTap: () => _selectTime(context),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(
+                            height: 0.0,
+                          ),
+
+
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Center(
+                              child: Container(
+                                height: 50.0,
+                                decoration: BoxDecoration(
+                                  color: Color(0xfff7f7f7),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(color: Colors.black12),
+                                ),
+                                child: TextField(
+                                  onChanged: (value){
+                                    mileage = value;
+                                    submitMile();
+
+                                    CarServicingPageFour.mileage =mileage;
+                                  },
+                                  cursorColor: MyColors.designColor,
+                                  keyboardType: TextInputType.number,
+                                  maxLines: null,
+                                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(10.0),
+                                    hintText: 'Input car mileage',
+                                    hintStyle: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),
+                                    border: InputBorder.none,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Center(
+                            child: Text(
+                              'Recommended',
+                              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w200),
+                            ),
+                          ),
+
+                          Center(
+                            child: Text(
+                              recommendedService.toString(),
+                              style: TextStyle(color: MyColors.designColor, fontSize: 22.0, fontWeight: FontWeight.w700),
+                            ),
+                          ),
+
+
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(25.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Color(0xfffab0b3),
+
+                                    borderRadius: BorderRadius.circular(15.0)
+                                ),
+                                child: DropdownButtonFormField<String>(
+                                    value: selectedServicingType,
+
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'Select Servicing Type';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                                      hintText: 'Select Type of Servicing',
+                                      hintStyle: TextStyle(color: Colors.black),
+                                      border: InputBorder.none,
+
+
+                                    ),
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        selectedServicingType = newValue;
+                                        print(selectedServicingType);
+
+                                        CarServicingPageFour.selectedTypeOfServicing = selectedServicingType;
+
+                                      });
+                                    },
+                                    items: typesOfService.map((serviceType) {
+                                      return DropdownMenuItem(
+                                        value: serviceType,
+                                        child: Text(
+                                          serviceType,
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                        ),
+
+                                      );
+                                    }).toList()),
+                              ),
+                            ),
+                          ),
+
+
+
+
+                          SizedBox(
+                            height: 20.0,
+                          ),
+
+                          MaterialButton(
+                            height: 50.0,
+                            onPressed: () async{
+                          validationChecks();
+                            },
+                            child: Text('Pick a Service',
+                                style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                            color: MyColors.designColor,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 102.0,
+                            ),
+                            elevation: 5.0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(30.0),
+                              ),
+                            ),
+                          ),
+
+
+
+                        ],
+                      ),
+                    ),
+                  ),
+
+
+                ],
+              ),
+
             ),
-
           ),
 
 

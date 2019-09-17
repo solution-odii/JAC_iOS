@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:jac/Components/CarRepairsComponents/CarsRepairsPageOne.dart';
+import 'package:jac/Components/CarServicingComponents/CarServicingPageTwo.dart';
 import 'package:jac/Constants/mycolors.dart';
 import 'package:jac/Models/httpException.dart';
 import 'package:jac/Providers/AuthenticationBackend.dart';
 import 'package:jac/Providers/BookingHistoryBackend.dart';
-
+import 'package:location/location.dart';
 import 'package:jac/Screens/registerScreen.dart';
+import 'package:jac/Utils/DialogUtil.dart';
+import 'package:jac/Utils/Loader.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,26 +21,50 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
+  static var errorMessage;
   final GlobalKey<FormState> _loginFormKey = GlobalKey();
   final LocalAuthentication _localAuthentication = LocalAuthentication();
   String _authorizedOrNot = "Not Authorized";
   bool fingerprintStatus = false;
   SharedPreferences sharedPreferences;
   String localEmail;
-
-
-
+  var isLoading = false;
   int userId;
+  String lat;
+  String lng;
 
+  var location = new Location();
+
+  local(){
+
+    location.onLocationChanged().listen((LocationData currentLocation) {
+      print(currentLocation.latitude);
+      print(currentLocation.longitude);
+      lat=currentLocation.latitude.toString();
+      lng = currentLocation.longitude.toString();
+      CarRepairFirstPageState.lat = currentLocation.latitude.toString();
+      CarRepairFirstPageState.lng = currentLocation.longitude.toString();
+      CarServicingPageTwoState.lat = currentLocation.latitude.toString();
+      CarServicingPageTwoState.lng = currentLocation.longitude.toString();
+
+    });
+  }
 
   Future<void> getHistory() async {
     sharedPreferences = await SharedPreferences.getInstance();
     userId = sharedPreferences.getInt('id');
 
-
-
      Provider.of<BookingHistoryBackend> (context, listen: false).fetchBookingHistory(
         userId
+    );
+  }
+
+  Future<void> submitFetchRequest() async{
+
+    await Provider.of<ServiceCenterBackend>(context, listen: false).fetchCarServiceCenter(
+        lat,
+        lng,
+        'JAC_MOTORS'
     );
   }
 
@@ -45,24 +73,8 @@ class LoginScreenState extends State<LoginScreen> {
     'password': '',
   };
 
-  void _showErrorDialog(String message) {
-    showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              title: Text('Notification'),
-              content: Text(message),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('Okay'),
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                )
-              ],
-            ));
-  }
 
-  var isLoading = false;
+
 
   Future<void> _submitLogin() async {
     _loginFormKey.currentState.save();
@@ -79,20 +91,16 @@ class LoginScreenState extends State<LoginScreen> {
         fingerprintStatus,
       );
     } on HttpException catch (error) {
-      var errorMessage = 'Authentication Failed';
-      if (error.toString().contains('Bad Credentials')) {
-        errorMessage = 'Invalid Email/Password';
-      }
-      _showErrorDialog(errorMessage);
+
     } catch (error) {
-      const errorMessage = 'Failed, Please try again';
-      _showErrorDialog(errorMessage);
+      Utils().showErrorDialog(context, errorMessage);
     }
 
     setState(() {
       isLoading = false;
     });
   }
+
 
   Future<void> _fingerLogin() async {
     _loginFormKey.currentState.save();
@@ -107,22 +115,17 @@ class LoginScreenState extends State<LoginScreen> {
         _authData['email'],
         fingerprintStatus,
       );
-    } on HttpException catch (error) {
-      var errorMessage = 'Authentication Failed';
-      if (error.toString().contains('Invalid Credentials entered')) {
-        errorMessage = 'Invalid Email/Password';
-      }
-      _showErrorDialog(errorMessage);
-    } catch (error) {
-      const errorMessage =
-          'Failed, Please check your Email or Network Connection and then try again';
-      _showErrorDialog(errorMessage);
+    } on Exception catch (error) {
+      print(errorMessage);
+      Utils().showErrorDialog(context, errorMessage);
     }
+
 
     setState(() {
       isLoading = false;
     });
   }
+
 
   Future<void> _authenticateMe() async {
     _loginFormKey.currentState.save();
@@ -145,29 +148,25 @@ class LoginScreenState extends State<LoginScreen> {
     if (_authorizedOrNot == 'Authorized') {
       fingerprintStatus = true;
       _fingerLogin();
+      getHistory();
       submitFetchRequest();
+
     }
   }
 
 
-  Future<void> submitFetchRequest() async{
 
-    await Provider.of<ServiceCenterBackend>(context, listen: false).fetchCarServiceCenter(
-        '6.4270161',
-        '3.4124684',
-        'JAC_MOTORS'
-    );
-  }
 
 
   @override
   void initState() {
-
+    local();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    local();
     final emailField = TextFormField(
       keyboardType: TextInputType.emailAddress,
       cursorColor: Colors.white,
@@ -208,6 +207,7 @@ class LoginScreenState extends State<LoginScreen> {
           hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none),
     );
+
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -283,6 +283,7 @@ class LoginScreenState extends State<LoginScreen> {
                           new AlwaysStoppedAnimation<Color>(Colors.white),
                         )
 
+
                       else
                         MaterialButton(
                           height: 50.0,
@@ -314,18 +315,18 @@ class LoginScreenState extends State<LoginScreen> {
                               await SharedPreferences.getInstance();
                           localEmail = sharedPreferences.getString("Email");
                           if (_authData['email'].isEmpty) {
-                            _showErrorDialog(
+                            Utils().showErrorDialog(context,
                                 'Enter Email Address and Proceed to fingerprint authentication');
                           } else if (localEmail != null &&
                               _authData['email'].isNotEmpty) {
                             if (localEmail == _authData['email']) {
                               _authenticateMe();
                             } else if (localEmail != _authData['email']) {
-                              _showErrorDialog(
+                              Utils().showErrorDialog(context,
                                   'Please Login with Email and Password');
                             }
                           } else if (localEmail == null) {
-                            _showErrorDialog(
+                            Utils().showErrorDialog(context,
                                 'Please Login with Email and Password');
                           }
                         },
@@ -373,14 +374,14 @@ class LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                       SizedBox(
-                        height: 100.0,
+                        height: 30.0,
                       ),
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Image(
                           height: 50.0,
                           width: 70.0,
-                          image: AssetImage('assets/images/jaclogonow.jpg'),
+                          image: AssetImage('assets/images/image_2.png'),
                         ),
                       ),
                     ],
@@ -388,7 +389,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

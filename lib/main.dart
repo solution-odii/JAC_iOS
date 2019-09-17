@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:jac/Providers/AuthenticationBackend.dart';
+import 'package:jac/Providers/CancelBookingBackend.dart';
 import 'package:jac/Screens/loginScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:jac/Providers/CarListBackend.dart';
@@ -40,10 +41,13 @@ class MyApp extends StatelessWidget{
         ChangeNotifierProvider.value(
             value: BookingHistoryBackend()
         ),
+        ChangeNotifierProvider.value(
+            value: CancelBookingBackend()
+        ),
       ],
         child: new MaterialApp(
       
-      title: 'JAC',
+      title: 'AutoShop',
       theme: ThemeData(fontFamily: 'Muli'),
     darkTheme: ThemeData.dark(),
       home: new SplashScreen(),

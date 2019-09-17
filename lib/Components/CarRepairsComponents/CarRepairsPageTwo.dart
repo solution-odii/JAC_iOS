@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Utils/DialogUtil.dart';
+import 'package:jac/Utils/Loader.dart';
 
 import 'CarRepairsPageThree.dart';
 import 'package:jac/Components/CarRepairsComponents/CarRepairsPageFour.dart';
@@ -16,13 +18,13 @@ class CarRepairsPageTwo extends StatefulWidget {
 class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
-
   String dateGet;
   String timeGet;
   String enteredProblem;
-
-
   var formatter = new DateFormat('yyyy-MM-dd');
+
+
+
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -68,9 +70,25 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
     CarRepairsPageFour.selectedTime =timeGet;
   }
 
+  validationChecks()async{
+    if(dateGet == null){
+      Utils().showErrorDialog(context, 'Please Select Date');
+    }else  if(timeGet == null){
+      Utils().showErrorDialog(context, 'Please Select Time');
+    } else {
+      Utils().openDialog(LoaderTwo(), context);
+      await Future.delayed(const Duration(milliseconds: 1000), () {
+        setState(() {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => CarRepairsPageThree()));
+        });
+      });
+    }
+    }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       resizeToAvoidBottomPadding: false,
@@ -78,7 +96,7 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
         children: <Widget>[
           Positioned.fill(
             child: Image.asset(
-              "assets/images/mask_group_1.png",
+              "assets/images/group_1185.png",
               fit: BoxFit.fitWidth,
               alignment: Alignment.bottomCenter,
             ),
@@ -121,7 +139,7 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
                               InkWell(
                                 child: Container(
                                   height: 50.0,
-                                  width: 178,
+                                 // width: 178,
                                   decoration: BoxDecoration(
                                     //shape: BoxShape.rectangle,
                                     color: Color(0xff393636),
@@ -136,13 +154,16 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: <Widget>[
-                                      Text(
-                                        '${DateFormat.yMMMd().format(selectedDate)}',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w200,
-                                            fontSize: 19.0),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${DateFormat.yMMMd().format(selectedDate)}',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w200,
+                                              fontSize: 19.0),
 
+                                        ),
                                       ),
 
                                       Icon(
@@ -164,7 +185,7 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
                               InkWell(
                                 child: Container(
                                   height: 50.0,
-                                  width: 168,
+                                 // width: 168,
                                   decoration: BoxDecoration(
                                     //shape: BoxShape.rectangle,
                                     color: Color(0xff393636),
@@ -179,13 +200,17 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: <Widget>[
 
-                                      Text(
-                                        '${selectedTime.format(context)}',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w200,
-                                            fontSize: 19.0),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${selectedTime.format(context)}',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w200,
+                                              fontSize: 19.0),
+                                        ),
                                       ),
+                                      SizedBox(width: 30,),
                                       Icon(
                                         Icons.arrow_drop_down,
                                         color: Colors.white,
@@ -252,9 +277,7 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
                         MaterialButton(
                           height: 50.0,
                           onPressed: () {
-                            print(timeGet);
-                            print(dateGet);
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => CarRepairsPageThree()));
+                           validationChecks();
                           },
                           child: Text('Continue',
                               style: TextStyle(color: Colors.white, fontSize: 20.0)),

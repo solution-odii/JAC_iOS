@@ -3,6 +3,8 @@ import 'package:jac/Models/carServiceCenters.dart';
 import 'package:jac/Models/carsList.dart';
 
 class Constants {
+  //static String baseURL = 'http://41.219.149.51:7080';
+  static String baseURL = 'http://10.2.2.47:7080';
   static CarListTypes carListType = new CarListTypes();
 
   static CarServiceCenterList carServicePersonsList = new CarServiceCenterList();

@@ -1,20 +1,29 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:jac/Components/CarRepairsComponents/CarRepairsPageFour.dart';
+import 'package:jac/Components/CarRepairsComponents/CarRepairsPageThree.dart';
+import 'package:jac/Components/CarServicingComponents/CarServicingPageFour.dart';
+import 'package:jac/Components/CarServicingComponents/CarServicingPageOne.dart';
+import 'package:jac/Components/CarServicingComponents/CarServicingPageThree.dart';
+import 'package:jac/Constants/constants.dart';
 import 'package:jac/Screens/homePage.dart';
 import 'package:jac/Screens/loginScreen.dart';
+import 'package:jac/Screens/registerScreen.dart';
+import 'package:jac/Utils/DialogUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class AuthenticateBackend with ChangeNotifier {
-  //String _userId;
 
+class AuthenticateBackend with ChangeNotifier {
     String userEmail;
     String firstName;
     int userID;
-
+    String responseMessage;
     SharedPreferences sharedPreferences;
+
+
+
 
   Future<void> signUpFetch(
       BuildContext context,
@@ -25,7 +34,7 @@ class AuthenticateBackend with ChangeNotifier {
       String vehicleModel,
       String plateNumber,
       String password) async {
-    const url = 'http://10.2.2.47:7080/api/customer/signup';
+    final url = Constants.baseURL+'/api/customer/signup';
 
     try {
       final response = await http.post(
@@ -48,16 +57,23 @@ class AuthenticateBackend with ChangeNotifier {
     print(json.decode(response.body));
 
       final responseData = json.decode(response.body);
+      responseMessage = responseData['message'];
+      print(responseMessage);
+      RegisterFormState.errorMessage =responseMessage;
+
       if(responseData['error'] != null){
         throw HttpException(responseData['error']['message']);
       }
 
       if(response.statusCode==200){
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+        dialog(context);
       }
 
     } catch (error) {
-      throw error;
+      RegisterFormState.errorMessage =error.toString();
+      print (RegisterFormState.errorMessage);
+      RegisterFormState().showErrorDialog(context, error.toString());
     }
 
     
@@ -73,14 +89,14 @@ class AuthenticateBackend with ChangeNotifier {
     userEmail = email;
 
     var resBody;
-    const url_test = 'http://10.2.2.47:7080/api/customer/login';
+    final url = Constants.baseURL+'/api/customer/login';
     //const url_sly ='http://192.168.137.52:7070/api/customer/login';
     //const url_live = 'http://jacautoshop.3lineng.com:7080';
 
       try {
 
         final response = await http.post(
-        url_test,
+        url,
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: json.encode({'email' : email, 'password' : password, 'fingerprint': false},),
       );
@@ -90,17 +106,24 @@ class AuthenticateBackend with ChangeNotifier {
         if(response.statusCode==200){
          saveEmail();
          resBody = jsonDecode(response.body.toString());
-        firstName = resBody['firstName'];
-        userID = resBody['id'];
-        print(userID);
-        print(firstName);
-        saveUserDetails();
+         firstName = resBody['firstName'];
+         userID = resBody['id'];
+         HomePageState.username = firstName;
+         HomePageState.userId = userID;
+         CarRepairsPageFour.userID = userID;
+         CarServicingPageOneState.userID = userID;
+         CarServicingPageFour.userID = userID;
+         saveUserDetails();
+
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
         }
 
-      final responseData = json.decode(response.body);
-      if(responseData['message'] != null){
-          throw HttpException(responseData['message']);
+      final responseData = json.decode(response.body.toString());
+        responseMessage = responseData['message'];
+        print(responseMessage);
+        LoginScreenState.errorMessage =responseMessage;
+      if(responseMessage != null){
+          throw HttpException(responseMessage);
       }
       } catch (error) {
 
@@ -113,7 +136,8 @@ class AuthenticateBackend with ChangeNotifier {
 
 
   Future<void> signInBioFetch(BuildContext context, String email, bool fingerprint) async{
-    const url = 'http://10.2.2.47:7080/api/customer/login';
+    final url = Constants.baseURL+'/api/customer/login';
+    var resBody;
 
     try {
       final response = await http.post(
@@ -125,20 +149,31 @@ class AuthenticateBackend with ChangeNotifier {
       print(json.decode(response.statusCode.toString()));
 
       if(response.statusCode==200){
+        saveEmail();
+        resBody = jsonDecode(response.body.toString());
+        firstName = resBody['firstName'];
+        userID = resBody['id'];
+        HomePageState.username = firstName;
 
+        HomePageState.userId = userID;
+        CarRepairsPageFour.userID = userID;
+        CarServicingPageOneState.userID = userID;
+        CarServicingPageFour.userID = userID;
+        saveUserDetails();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
       }
 
-
-      final responseData = json.decode(response.body);
-
-      if(responseData['error']!=null){
-        throw HttpException(responseData['error']['message']);
+      final responseData = json.decode(response.body.toString());
+      responseMessage = responseData['message'];
+      print(responseMessage);
+      LoginScreenState.errorMessage =responseMessage;
+      if(responseMessage != null){
+        throw HttpException(responseMessage);
       }
     } catch (error) {
+
       throw error;
     }
-
   }
 
 
@@ -150,6 +185,7 @@ class AuthenticateBackend with ChangeNotifier {
 
   }
 
+
     saveUserDetails()async{
       sharedPreferences = await SharedPreferences.getInstance();
       sharedPreferences.setString("FirstName", firstName);
@@ -157,5 +193,17 @@ class AuthenticateBackend with ChangeNotifier {
 
     }
 
+
+    dialog(BuildContext context){
+      Utils().openDialog(BeautifulAlertDialog(
+        assetImage: 'assets/images/successimage.png',
+        firstText:  'Registration Successfull',
+        secondText:  'You would recieve a confirmation mail',
+        confirmText: 'Okay',),
+
+          context);
+
+
+    }
 
 }

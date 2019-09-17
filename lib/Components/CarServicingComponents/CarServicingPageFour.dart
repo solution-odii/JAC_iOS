@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Providers/BookingHistoryBackend.dart';
 import 'package:jac/Providers/CarServiceBookingBackend.dart';
 import 'package:jac/Screens/homePage.dart';
 import 'package:jac/Utils/DialogUtil.dart';
+import 'package:jac/Utils/Loader.dart';
 import 'package:provider/provider.dart';
 
 
@@ -22,37 +24,57 @@ class CarServicingPageFour extends StatelessWidget{
 
 
 
+  Future<void> submitServicingService(BuildContext context) async {
+    await Provider.of<BookCarServiceBackend>(context, listen: false).bookCarServicingFetch(
+        userID,
+        selectedDate,
+        int.parse(mileage),
+        selectedTypeOfServicing,
+        selectedTime,
+        'Servicing'.trim(),
+        selectedServiceCenter,
+        selectedBrand,
+        selectedModel);
+  }
+
+
+  dialog(BuildContext context){
+    Utils().openDialog(BeautifulAlertDialog(
+      assetImage: 'assets/images/successimage.png',
+      firstText:  'Booking Request Sent',
+      secondText:  'You would recieve a confirmation mail',
+      confirmText: 'Okay',),
+
+        context);
+
+
+  }
+  Future<void> submitFetchBookingHistory(BuildContext context) async{
+    Provider.of<BookingHistoryBackend>(context, listen: false)
+        .fetchBookingHistory(userID);
+
+  }
 
 
 
   @override
   Widget build(BuildContext context) {
 
-    Future<void> submitServicingService() async {
-      await Provider.of<BookCarServiceBackend>(context, listen: false).bookCarServicingFetch(
-          userID,
-          selectedDate.toString(),
-          int.parse(mileage),
-          selectedTypeOfServicing,
-          selectedTime.toString(),
-          'Servicing'.trim(),
-          selectedServiceCenter,
-          selectedBrand,
-          selectedModel);
+     submitFetchBookingHistory() {
+      Provider.of<BookingHistoryBackend>(context, listen: false)
+          .fetchBookingHistory(userID);
+
     }
 
-
-    dialog(){
-      Utils().openDialog(BeautifulAlertDialog(
-        assetImage: 'assets/images/successimage.png',
-        firstText:  'Booking Request Sent',
-        secondText:  'You would recieve a confirmation mail',
-        confirmText: 'Okay',),
-
-          context);
+    navigate()async{
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+        dialog(context);
+      });
 
 
     }
+
 
 
     return Center(
@@ -150,7 +172,7 @@ class CarServicingPageFour extends StatelessWidget{
                           fontWeight: FontWeight.w700,
                           fontSize: 17.0),),
 
-                    Text('${selectedModel.toString()}',
+                    Text('${selectedTypeOfServicing.toString()}',
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w200,
@@ -217,9 +239,9 @@ class CarServicingPageFour extends StatelessWidget{
                 child: MaterialButton(
                   height: 50.0,
                   onPressed: () async {
-                    await submitServicingService();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-                    dialog();
+                    Utils().openDialog(LoaderTwo(), context);
+                    await submitServicingService(context).whenComplete(submitFetchBookingHistory);
+                    navigate();
                   },
                   child: Text('Submit',
                       style: TextStyle(color: Colors.white, fontSize: 20.0)),

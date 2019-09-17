@@ -76,10 +76,10 @@ class CarsDatabase{
   }
 
 
+  Future<List<CarTypes>> getVehicleType(String brand) async{
 
-  Future<List<CarTypes>> getCarCodes() async{
     final db = await database;
-    var response = await db.rawQuery('SELECT DISTINCT code FROM Cars');
+    var response = await db.rawQuery('SELECT DISTINCT code FROM Cars WHERE extraInfo = ?', [brand]);
     List<CarTypes> carCodeList = response.map((c) => CarTypes.fromJson(c)).toList();
     print(carCodeList);
     Constants.carCodes = carCodeList;
@@ -87,10 +87,10 @@ class CarsDatabase{
   }
 
 
-  Future<List<CarTypes>> getVehicleType(String type) async{
+  Future<List<CarTypes>> getVehicleModel(String type, String brand) async{
     
     final db = await database;
-    var response = await db.rawQuery('SELECT description FROM Cars WHERE code = ?', [type]);
+    var response = await db.rawQuery('SELECT description FROM Cars WHERE code = ? AND extraInfo = ?', [type, brand]);
     List<CarTypes> carDescripList = response.map((c) => CarTypes.fromJson(c)).toList();
     print(carDescripList);
     Constants.carDescription = carDescripList;

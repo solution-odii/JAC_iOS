@@ -14,7 +14,7 @@ class ServiceCenterBackend with ChangeNotifier{
       String car
       ) async{
 
-    const url_test = "http://10.2.2.47:7080/api/customer/all/carservicing/location";
+    final url = Constants.baseURL+'/api/customer/all/carservicing/location';
 
     var response;
     var resp;
@@ -22,7 +22,7 @@ class ServiceCenterBackend with ChangeNotifier{
 
     try {
       response = await http.post(
-        url_test,
+        url,
           headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: jsonEncode({
           'lat' : lat,

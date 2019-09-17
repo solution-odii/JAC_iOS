@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:jac/Providers/BookingHistoryBackend.dart';
 import 'package:jac/Providers/RepairBookingBackend.dart';
 import 'package:jac/Screens/homePage.dart';
 import 'package:jac/Utils/DialogUtil.dart';
+import 'package:jac/Utils/Loader.dart';
 import 'package:provider/provider.dart';
 
 
@@ -21,36 +23,61 @@ class CarRepairsPageFour extends StatelessWidget{
   final designColor = const Color(0xffed151e);
 
 
+  Future<void> submitRepairService(BuildContext context) async {
+    await Provider.of<BookRepairBackend>(context, listen: false).bookRepairsServiceFetch(
+        userID,
+        selectedDate.toString(),
+        enteredProblem,
+        selectedTime.toString(),
+        'Repairs'.trim(),
+        selectedServiceCenter,
+        selectedBrand,
+        selectedModel);
+  }
+
+  dialog(BuildContext context){
+    Utils().openDialog(BeautifulAlertDialog(
+      assetImage: 'assets/images/successimage.png',
+      firstText:  'Booking Request Sent',
+      secondText:  'You would recieve a confirmation mail',
+      confirmText: 'Okay',),
+
+        context);
+
+
+  }
+
+  submitFetchBookingHistory(BuildContext context){
+    Provider.of<BookingHistoryBackend>(context, listen: false)
+        .fetchBookingHistory(userID);
+
+  }
+
+
+
+
+
 
 
   @override
   Widget build(BuildContext context) {
+    submitFetchBookingHistory(){
+      Provider.of<BookingHistoryBackend>(context, listen: false)
+          .fetchBookingHistory(userID);
 
-    Future<void> submitRepairService() async {
-      await Provider.of<BookRepairBackend>(context, listen: false).bookRepairsServiceFetch(
-          userID,
-          selectedDate.toString(),
-          enteredProblem,
-          selectedTime.toString(),
-          'Repairs'.trim(),
-          selectedServiceCenter,
-          selectedBrand,
-          selectedModel);
     }
 
-    dialog(){
-      Utils().openDialog(BeautifulAlertDialog(
-        assetImage: 'assets/images/successimage.png',
-        firstText:  'Booking Request Sent',
-        secondText:  'You would recieve a confirmation mail',
-        confirmText: 'Okay',),
+    navigate()async{
 
-          context);
+       Future.delayed(const Duration(milliseconds: 1000), () {
+         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+         dialog(context);
+       });
 
 
     }
 
-    // TODO: implement build
+
     return Center(
       child: Container(
         height: 370,
@@ -164,10 +191,11 @@ class CarRepairsPageFour extends StatelessWidget{
               Center(
                 child: MaterialButton(
                   height: 50.0,
-                  onPressed: () {
-                    submitRepairService();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-                    dialog();
+                  onPressed: () async{
+                    Utils().openDialog(LoaderTwo(), context);
+                   await submitRepairService(context).whenComplete(submitFetchBookingHistory);
+navigate();
+
                   },
                   child: Text('Submit',
                       style: TextStyle(color: Colors.white, fontSize: 20.0)),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jac/Constants/mycolors.dart';
 import 'package:jac/Screens/loginScreen.dart';
+import 'package:jac/Utils/DialogUtil.dart';
 import 'package:provider/provider.dart';
 import '../Providers/AuthenticationBackend.dart';
 import 'package:jac/Constants/constants.dart';
@@ -77,6 +78,12 @@ class RegisterForm extends StatefulWidget {
 }
 
 class RegisterFormState extends State<RegisterForm> {
+  static var errorMessage;
+  String selectedVehicle;
+  var isLoading = false;
+  final _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey();
+  var passKey = GlobalKey<FormFieldState>();
 
 
   Map<String, String> _authData = {
@@ -88,12 +95,7 @@ class RegisterFormState extends State<RegisterForm> {
     'plateNumber': '',
     'password': '',
   };
-  String selectedVehicle;
-  var isLoading = false;
-  final _passwordController = TextEditingController();
 
-  final GlobalKey<FormState> _formKey = GlobalKey();
-  var passKey = GlobalKey<FormFieldState>();
 
   Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
@@ -103,21 +105,43 @@ class RegisterFormState extends State<RegisterForm> {
         isLoading = true;
       });
 
-      await Provider.of<AuthenticateBackend>(context, listen: false).signUpFetch(
-          context,
-        _authData['firstName'],
-        _authData['lastName'],
-        _authData['email'],
-        _authData['phoneNumber'],
-        _authData['vehicleModel'],
-        _authData['plateNumber'],
-        _authData['password'],
-      );
+      try {
+        await Provider.of<AuthenticateBackend>(context, listen: false).signUpFetch(
+            context,
+          _authData['firstName'],
+          _authData['lastName'],
+          _authData['email'],
+          _authData['phoneNumber'],
+          _authData['vehicleModel'],
+          _authData['plateNumber'],
+          _authData['password'],
+        );
+      } on Exception catch (error) {
+        print(errorMessage);
+        Utils().showErrorDialog(context, errorMessage);
+      }
 
       setState(() {
         isLoading = false;
       });
     }
+  }
+
+  void showErrorDialog(BuildContext context, String message) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Notification'),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Okay'),
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+            )
+          ],
+        ));
   }
 
 

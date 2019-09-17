@@ -5,6 +5,7 @@ import 'package:jac/Models/carServiceCenters.dart';
 import 'package:jac/Constants/constants.dart';
 import 'package:jac/Components/CarRepairsComponents/CarRepairsPageFour.dart';
 import 'package:jac/Utils/DialogUtil.dart';
+import 'package:jac/Utils/Loader.dart';
 
 
 
@@ -32,6 +33,18 @@ class CarRepairsPageThreeState extends State<CarRepairsPageThree> {
     });
   }
 
+  validationChecks()async {
+    if (chosenServiceCenter == null) {
+      Utils().showErrorDialog(context, 'Please Select a Service Center');
+    } else {
+      Utils().openDialog(LoaderTwo(), context);
+      await Future.delayed(const Duration(milliseconds: 1000), () {
+        setState(() {
+          Utils().openDialog(CarRepairsPageFour(), context);
+        });
+      });
+    }
+  }
 
 
   @override
@@ -44,7 +57,7 @@ class CarRepairsPageThreeState extends State<CarRepairsPageThree> {
       body: Column(
         children: <Widget>[
           Container(
-            height: 250,
+            height: 230,
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("assets/images/mask_group_3.png",),
@@ -87,7 +100,7 @@ class CarRepairsPageThreeState extends State<CarRepairsPageThree> {
           ),
 
           SizedBox(
-            height: 350,
+            height: 300,
             child: ListView.builder(
                 itemCount: locations.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -192,42 +205,6 @@ class CarRepairsPageThreeState extends State<CarRepairsPageThree> {
 
 
 
-
-
-//                                Icon(
-//                                  Icons.star,
-//                                  color: designColor,
-//                                  size: 18,
-//                                ),
-//                                Icon(
-//                                  Icons.star,
-//                                  color: designColor,
-//                                  size: 18,
-//                                ),
-//                                Icon(
-//                                  Icons.star,
-//                                  color: designColor,
-//                                  size: 18,
-//                                ),
-//                                Icon(
-//                                  Icons.star,
-//                                  color: designColor,
-//                                  size: 18,
-//                                ),
-//
-//
-//
-//                                  Text(
-//                                    '4.0',
-//                                    style: TextStyle(
-//                                        color: Colors.black,
-//                                        fontWeight: FontWeight.w200,
-//                                        fontSize: 16.0),
-//                                  ),
-//
-
-
-
                               ],
                             ),
 
@@ -242,13 +219,13 @@ class CarRepairsPageThreeState extends State<CarRepairsPageThree> {
 
 
           SizedBox(
-            height: 20.0,
+            height: 30.0,
           ),
 
           MaterialButton(
             height: 50.0,
             onPressed: () {
-             Utils().openDialog(CarRepairsPageFour(), context);
+            validationChecks();
             },
             child: Text('Proceed',
                 style: TextStyle(color: Colors.white, fontSize: 20.0)),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jac/Constants/mycolors.dart';
 
+
+
 class Utils{
+
   openDialog(Widget widget, BuildContext context){
     showDialog(
         context: context,
@@ -11,19 +14,27 @@ class Utils{
     );
   }
 
-//  dialogView(BuildContext context, String assetImage, String firstText, String secondText, String confirmText){
-//
-//  }
 
-//  showStatefulDialog(StatefulWidget widget, BuildContext context){
-//    showDialog(
-//        context: context,
-//        builder: (BuildContext context){
-//          return widget;
-//        }
-//    );
-//  }
+  void showErrorDialog(BuildContext context, String message) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Notification'),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Okay'),
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+            )
+          ],
+        ));
+  }
+
+
 }
+
 
 class BeautifulAlertDialog extends StatelessWidget{
  final String assetImage, firstText, secondText,  confirmText;

@@ -10,7 +10,7 @@ class BookingHistoryBackend with ChangeNotifier{
 
   Future<void> fetchBookingHistory(int id) async{
 
-    var url = 'http://10.2.2.47:7080/api/customer/${id}/book/details';
+    final url = Constants.baseURL+'/api/customer/${id}/book/details';
     var response;
     var resp;
 
