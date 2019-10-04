@@ -18,9 +18,9 @@ class ChoiceSelectorState extends State<ChoiceSelector> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-      height: 130,
+      height: 120,
       padding: const EdgeInsets.symmetric(
-          horizontal: 55.0, vertical: 20.0),
+          horizontal: 50.0, vertical: 20.0),
       decoration: widget.isVehicleBrandSelected
           ? BoxDecoration(
           color: Colors.grey.withOpacity(.15),
@@ -45,7 +45,7 @@ class ChoiceSelectorState extends State<ChoiceSelector> {
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 16.0),
+                fontSize: 14.0),
           ),
 
         ],

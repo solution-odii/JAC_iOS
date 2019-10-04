@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:jac/Providers/AuthenticationBackend.dart';
 import 'package:jac/Providers/CancelBookingBackend.dart';
-import 'package:jac/Screens/loginScreen.dart';
+import 'package:jac/Providers/EmergencyServiceBackend.dart';
+import 'package:jac/Screens/LoginScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:jac/Providers/CarListBackend.dart';
-import 'package:jac/Constants/constants.dart';
+import 'package:jac/Constants/Constants.dart';
 
 import 'Providers/BookingHistoryBackend.dart';
 import 'Providers/CarServiceBookingBackend.dart';
@@ -44,11 +45,14 @@ class MyApp extends StatelessWidget{
         ChangeNotifierProvider.value(
             value: CancelBookingBackend()
         ),
+        ChangeNotifierProvider.value(
+            value: EmergencyServiceBackend()
+        ),
       ],
         child: new MaterialApp(
       
       title: 'AutoShop',
-      theme: ThemeData(fontFamily: 'Muli'),
+      theme: ThemeData(fontFamily: 'Muli',primarySwatch: Colors.red,),
     darkTheme: ThemeData.dark(),
       home: new SplashScreen(),
 

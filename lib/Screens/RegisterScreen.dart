@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:jac/Constants/mycolors.dart';
-import 'package:jac/Screens/loginScreen.dart';
+import 'package:jac/Constants/MyColors.dart';
+import 'package:jac/Screens/LoginScreen.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:provider/provider.dart';
 import '../Providers/AuthenticationBackend.dart';
-import 'package:jac/Constants/constants.dart';
-import 'package:jac/Models/carsList.dart';
+import 'package:jac/Constants/Constants.dart';
+import 'package:jac/Models/CarsList.dart';
 import 'package:quiver/strings.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -14,6 +14,32 @@ class RegisterScreen extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: Text('REGISTER',
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0)),
+
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoginScreen(),
+              ),
+            );
+          },
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
+
+        centerTitle: true,
+        backgroundColor: Colors.black87,
+
+      ),
       body: Stack(
         children: <Widget>[
           Container(
@@ -31,34 +57,34 @@ class RegisterScreen extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 SizedBox(
-                  height: 30.0,
+                  height: 0.0,
                 ),
-                Row(
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          ),
-                        );
-                      },
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 120.0),
-                      child: Text('REGISTER',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0)),
-                    ),
-                  ],
-                ),
+//                Row(
+//                  children: <Widget>[
+//                    InkWell(
+//                      onTap: () {
+//                        Navigator.pop(
+//                          context,
+//                          MaterialPageRoute(
+//                            builder: (context) => LoginScreen(),
+//                          ),
+//                        );
+//                      },
+//                      child: Icon(
+//                        Icons.arrow_back,
+//                        color: Colors.white,
+//                      ),
+//                    ),
+//                    Padding(
+//                      padding: const EdgeInsets.only(left: 120.0),
+//                      child: Text('REGISTER',
+//                          style: TextStyle(
+//                              color: Colors.white,
+//                              fontWeight: FontWeight.bold,
+//                              fontSize: 20.0)),
+//                    ),
+//                  ],
+//                ),
 
                 RegisterForm()
               ],
@@ -323,17 +349,14 @@ class RegisterFormState extends State<RegisterForm> {
 
     return Container(
       //height: MediaQuery.of(context).size.height,
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(8),
       child: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
+        child:  Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(
-                height: 15.0,
-              ),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Container(
@@ -505,7 +528,7 @@ class RegisterFormState extends State<RegisterForm> {
               ),
             ],
           ),
-        ),
+
       ),
     );
   }

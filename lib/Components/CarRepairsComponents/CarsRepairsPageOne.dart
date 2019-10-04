@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jac/Constants/constants.dart';
-import 'package:jac/Constants/mycolors.dart';
-import 'package:jac/Models/carsList.dart';
+import 'package:jac/Constants/Constants.dart';
+import 'package:jac/Constants/MyColors.dart';
+import 'package:jac/Models/CarsList.dart';
 import 'package:jac/Database/CarModelDB.dart';
 import 'package:jac/Providers/CarServiceCentersBackend.dart';
 import 'package:jac/Utils/DialogUtil.dart';
@@ -105,7 +105,7 @@ loaderMan()async{
             Center(
               child: Text(
                 'Choose a Vehicle Brand',
-                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
               ),
             ),
             SizedBox(
@@ -159,7 +159,7 @@ loaderMan()async{
                 children: <Widget>[
                   Text(
                     'Choose Vehicle Type',
-                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w300),
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300),
                   )
                 ],
               ),
@@ -222,7 +222,7 @@ loaderMan()async{
                 children: <Widget>[
                   Text(
                     'Choose Vehicle Model',
-                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w300),
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300),
                   )
                 ],
               ),
@@ -280,7 +280,7 @@ loaderMan()async{
                validationChecks();
               },
               child: Text('Continue',
-                  style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                  style: TextStyle(color: Colors.white, fontSize: 16.0)),
               color: MyColors.designColor,
               padding: EdgeInsets.symmetric(
                 horizontal: 102.0,
@@ -292,6 +292,8 @@ loaderMan()async{
                 ),
               ),
             ),
+
+            SizedBox(height: 10,)
 
           ],
           ),

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:jac/Components/CarRepairsComponents/CarsRepairsPageOne.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageTwo.dart';
+import 'package:jac/Components/EmergencyServiceComponents/CallEmergencyCenterDialog.dart';
 import 'package:jac/Components/HomePageComponents/AllBookingHistory.dart';
 import 'package:jac/Components/HomePageComponents/SelectedBookingHistory.dart';
-import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Constants/MyColors.dart';
 import 'package:jac/Providers/CarServiceCentersBackend.dart';
-import 'package:jac/Screens/carRepairScreen.dart';
-import 'package:jac/Screens/carServicing.dart';
-import 'package:jac/Database/CarModelDB.dart';
+import 'package:jac/Providers/EmergencyServiceBackend.dart';
+import 'package:jac/Screens/CarRepairScreen.dart';
+import 'package:jac/Screens/CarServicing.dart';
+import 'package:jac/Screens/EmergencyScreen.dart';
 import 'package:jac/Utils/CloseApp.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:jac/Utils/Loader.dart';
@@ -15,8 +17,10 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:jac/Providers/BookingHistoryBackend.dart';
 import 'package:jac/Models/BookingHistoryModel.dart';
-import 'package:jac/Constants/constants.dart';
+import 'package:jac/Constants/Constants.dart';
 import 'package:quiver/strings.dart';
+import 'package:geocoder/geocoder.dart';
+
 
 
 class HomePage extends StatefulWidget {
@@ -31,11 +35,12 @@ class HomePageState extends State<HomePage> {
   String lat;
   String lng;
 
+  var userLocationAddress;
+
   var location = new Location();
 
-  local(){
-
-    location.onLocationChanged().listen((LocationData currentLocation) {
+ void local() {
+    location.onLocationChanged().listen((LocationData currentLocation) async{
       print(currentLocation.latitude);
       print(currentLocation.longitude);
       lat=currentLocation.latitude.toString();
@@ -45,7 +50,16 @@ class HomePageState extends State<HomePage> {
       CarServicingPageTwoState.lat = currentLocation.latitude.toString();
       CarServicingPageTwoState.lng = currentLocation.longitude.toString();
 
+
+      final coordinates = new Coordinates(currentLocation.latitude, currentLocation.longitude);
+      var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      var getAddress = addresses.first;
+      userLocationAddress = getAddress.addressLine;
+      print(userLocationAddress);
+      CallEmergencyCenterDialog.location = userLocationAddress.toString();
     });
+
+
   }
 
   Future<void> submitFetchRequest() async{
@@ -79,6 +93,7 @@ class HomePageState extends State<HomePage> {
     submitFetchBookingHistory();
     local();
     submitFetchRequest();
+    EmergencyServiceBackend().fetchEmergencyCenters();
    // CarsDatabase.carsDatabase.getCarCodes();
 
 
@@ -94,21 +109,45 @@ class HomePageState extends State<HomePage> {
         title: new Text('Are you sure?'),
         content: new Text('Do you want to exit an App'),
         actions: <Widget>[
-          new GestureDetector(
-            onTap: () => Navigator.of(context).pop(false),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text("No", ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: MaterialButton(
+              height: 40.0,
+              onPressed:   () => Navigator.of(context).pop(false),
+              child: Text('No',
+                  style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w200)),
+              color: MyColors.designColor,
+              padding: EdgeInsets.symmetric(
+                horizontal: 30.0,
+              ),
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30.0),
+                ),
+              ),
             ),
           ),
-          SizedBox(
-            width: 10,
-          ),
-          new GestureDetector(
-            onTap: () => Navigator.of(context).pop(true),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(" Yes "),
+
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: MaterialButton(
+              height: 40.0,
+              onPressed:
+                  () => Navigator.of(context).pop(true),
+
+              child: Text('Yes',
+                  style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w200)),
+              color: MyColors.designColor,
+              padding: EdgeInsets.symmetric(
+                horizontal: 30.0,
+              ),
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30.0),
+                ),
+              ),
             ),
           ),
         ],
@@ -116,6 +155,14 @@ class HomePageState extends State<HomePage> {
     ) ??
         false;
   }
+
+//  Future<bool> _onBackPressed() {
+//    return Utils().openDialog(
+//        CloseAppDialog(context), context
+//    ) ??
+//        false;
+//  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -177,52 +224,53 @@ class HomePageState extends State<HomePage> {
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 22.0),
+                        fontSize: 16.0),
                   ),
                 ),
+                SizedBox(
+                  height: 40.0,
+                ),
+//                Center(
+//                  child: Padding(
+//                    padding: const EdgeInsets.all(20.0),
+//                    child: RaisedButton(
+//                      onPressed: () {},
+//                      color: Colors.white,
+//                      shape: RoundedRectangleBorder(
+//                          borderRadius:
+//                              BorderRadius.all(Radius.circular(30.0))),
+//                      child: Row(
+//                        children: <Widget>[
+//                          Icon(
+//                            Icons.location_on,
+//                            size: 16,
+//                            color: MyColors.designColor,
+//                          ),
+//                          Text(
+//                            '  Lagos, Nigeria',
+//                            style: TextStyle(
+//                                color: Colors.black,
+//                                fontWeight: FontWeight.w200,
+//                                fontSize: 16.0),
+//                          ),
+//                        ],
+//                      ),
+//                    ),
+//                  ),
+//                ),
                 SizedBox(
                   height: 0.0,
                 ),
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: RaisedButton(
-                      onPressed: () {},
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(30.0))),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.location_on,
-                            color: MyColors.designColor,
-                          ),
-                          Text(
-                            '  Lagos, Nigeria',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w200,
-                                fontSize: 18.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 0.0,
-                ),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(4.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         GestureDetector(
                           child: Container(
-                            height: 90.0,
-                            width: 90.0,
+                            height: 100.0,
+                            width: 100.0,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15.0),
                               color: MyColors.designColor,
@@ -244,7 +292,7 @@ class HomePageState extends State<HomePage> {
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 16.0),
+                                        fontSize: 14.0),
                                   )
                                 ],
                               ),
@@ -260,8 +308,8 @@ class HomePageState extends State<HomePage> {
                         ),
                         GestureDetector(
                           child: Container(
-                            height: 90.0,
-                            width: 90.0,
+                            height: 100.0,
+                            width: 100.0,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15.0),
                               color: Colors.white,
@@ -283,7 +331,7 @@ class HomePageState extends State<HomePage> {
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 16.0),
+                                        fontSize: 14.0),
                                   )
                                 ],
                               ),
@@ -302,8 +350,8 @@ class HomePageState extends State<HomePage> {
 
                         GestureDetector(
                           child: Container(
-                            height: 90.0,
-                            width: 90.0,
+                            height: 100.0,
+                            width: 100.0,
 
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15.0),
@@ -333,7 +381,8 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                           onTap: () {
-
+                            EmergencyServiceBackend().fetchEmergencyCenters();
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> EmergencyScreen()));
                           },
                         ),
                       ],
@@ -350,18 +399,18 @@ class HomePageState extends State<HomePage> {
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
+                        padding: const EdgeInsets.only(left: 30.0),
                         child: Text(
                           'Booking History',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w100,
-                              fontSize: 20.0,
+                              fontSize: 16.0,
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(right: 20.0),
+                        padding: const EdgeInsets.only(right: 30.0),
                         child: InkWell(
                           onTap: () {
                             Utils().openDialog(LoaderTwo(), context);
@@ -376,7 +425,7 @@ class HomePageState extends State<HomePage> {
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w100,
-                                fontSize: 20.0),
+                                fontSize: 16.0),
                           ),
                         ),
                       )
@@ -384,96 +433,104 @@ class HomePageState extends State<HomePage> {
                   ),
                 ),
 
+                SizedBox(
+                  height: 20,
+                ),
                 //TODO: ADD the Booking History here
 
                 SizedBox(
-                  height: 350,
+                  height: 380,
                   child: FutureBuilder<Object>(
                     future: submitFetchBookingHistory(),
                     builder: (context, snapshot) {
-                      return ListView.builder(
-                          itemCount: numberToDisplay,
-                          itemBuilder: (BuildContext context, int index) {
-                            BookingHistoryModel model = historyList[index];
-                            print(historyList.toString());
+                      return GestureDetector(
+                        onHorizontalDragDown: (DragDownDetails dragDownDetails){
+                          submitFetchBookingHistory();
+                        },
+                        child: ListView.builder(
+                            itemCount: numberToDisplay,
+                            itemBuilder: (BuildContext context, int index) {
+                              BookingHistoryModel model = historyList[index];
+                              print(historyList.toString());
 
-                            if (equalsIgnoreCase(
-                                model.carServicingStatus, 'CONFIRMED')||equalsIgnoreCase(
-                                model.carServicingStatus, 'COMPLETED')) {
-                              status = statusSuccess;
-                            } else if(equalsIgnoreCase(
-                                model.carServicingStatus, 'PENDING')) {
-                              status = statusPending;
-                            } else if(equalsIgnoreCase(
-                                model.carServicingStatus, 'CANCELLED')) {
-                              status = statusCancelled;
-                            }
-                            return InkWell(
-                              onTap: (){
-                                SelectedBookingHistory.serviceID = model.id;
-                                Utils().openDialog(LoaderTwo(), context);
-                                Future.delayed(const Duration(milliseconds: 1000), () {
-                                  setState(() {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                        SelectedBookingHistory(
-                                        serviceStatus: model.carServicingStatus,
-                                        serviceType: model.serviceType,
-                                        serviceDate: model.date,
-                                        serviceTime: model.notificationTime,
-                                        vehicleType: model.vehicleType,
-                                        vehicleModel: model.vehicleBrand,
-                                        serviceCenter: model.carserving,
-                                        serviceLocation: model.serviceLocation
-                                    ),
-
-                                    ));
-                                  });
-                                });
-
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 1.0),
-                                child: Card(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                                  elevation: 3,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              model.serviceType.toString(),
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Text(
-                                              '${model.date.toString()+ ' @ ' + model.notificationTime.toString()}',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                              if (equalsIgnoreCase(
+                                  model.carServicingStatus, 'CONFIRMED')||equalsIgnoreCase(
+                                  model.carServicingStatus, 'COMPLETED')) {
+                                status = statusSuccess;
+                              } else if(equalsIgnoreCase(
+                                  model.carServicingStatus, 'PENDING')) {
+                                status = statusPending;
+                              } else if(equalsIgnoreCase(
+                                  model.carServicingStatus, 'CANCELLED')) {
+                                status = statusCancelled;
+                              }
+                              return InkWell(
+                                onTap: (){
+                                  SelectedBookingHistory.serviceID = model.id;
+                                  Utils().openDialog(LoaderTwo(), context);
+                                  Future.delayed(const Duration(milliseconds: 1000), () {
+                                    setState(() {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                          SelectedBookingHistory(
+                                          serviceStatus: model.carServicingStatus,
+                                          serviceType: model.serviceType,
+                                          serviceDate: model.date,
+                                          serviceTime: model.notificationTime,
+                                          vehicleType: model.vehicleType,
+                                          vehicleModel: model.vehicleBrand,
+                                          serviceCenter: model.carserving,
+                                          serviceLocation: model.serviceLocation
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(18.0),
-                                        child: status,
-                                      )
-                                    ],
+
+                                      ));
+                                    });
+                                  });
+
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 1.0),
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                                    elevation: 3,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                model.serviceType.toString(),
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold),
+                                              ),
+                                              SizedBox(
+                                                height: 8,
+                                              ),
+                                              Text(
+                                                '${model.date.toString()+ ' @ ' + model.notificationTime.toString()}',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(18.0),
+                                          child: status,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          });
+                              );
+                            }),
+                      );
                     }
                   ),
                 ),

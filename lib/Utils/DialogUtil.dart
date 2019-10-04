@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Constants/MyColors.dart';
 
 
 
@@ -117,3 +117,4 @@ class BeautifulAlertDialog extends StatelessWidget{
 
   }
 }
+

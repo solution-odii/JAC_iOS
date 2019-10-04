@@ -3,7 +3,7 @@ import 'dart:math';
 
 
 import 'package:flutter/material.dart';
-import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Constants/MyColors.dart';
 
 class LoaderTwo extends StatefulWidget {
   final Color centralDotColor;

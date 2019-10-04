@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:jac/Components/CarServicingComponents/CarServicingPageFour.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageOne.dart';
-import 'package:jac/Constants/constants.dart';
+import 'package:jac/Constants/Constants.dart';
 
 class BookCarServiceBackend with ChangeNotifier{
 
@@ -55,7 +56,8 @@ class BookCarServiceBackend with ChangeNotifier{
       String serviceType,
       String serviceUsername,
       String vehicleBrand,
-      String vehicleType) async {
+      String vehicleType,
+      BuildContext context) async {
     final url = Constants.baseURL+'/api/customer/book';
 
     var response;
@@ -80,11 +82,14 @@ class BookCarServiceBackend with ChangeNotifier{
       print(json.decode(response.body));
       print(json.decode(response.statusCode.toString()));
     } on Exception catch (e) {
-      print(e.toString());
+      CarServicingPageFour().navigate(context, false, 'Please Check Internet Connection');
     }
 
     if (response.statusCode == 200) {
       resp = jsonDecode(response.body);
+      CarServicingPageFour().navigate(context, true, null);
+    }else{
+      CarServicingPageFour().navigate(context, false, 'Please Check Internet Connection');
     }
 
   }

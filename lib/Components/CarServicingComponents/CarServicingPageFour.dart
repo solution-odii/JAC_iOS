@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Constants/MyColors.dart';
 import 'package:jac/Providers/BookingHistoryBackend.dart';
 import 'package:jac/Providers/CarServiceBookingBackend.dart';
-import 'package:jac/Screens/homePage.dart';
+import 'package:jac/Screens/HomePage.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:jac/Utils/Loader.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +34,8 @@ class CarServicingPageFour extends StatelessWidget{
         'Servicing'.trim(),
         selectedServiceCenter,
         selectedBrand,
-        selectedModel);
+        selectedModel,
+    context);
   }
 
 
@@ -49,33 +50,44 @@ class CarServicingPageFour extends StatelessWidget{
 
 
   }
-  Future<void> submitFetchBookingHistory(BuildContext context) async{
+
+  failDialog(BuildContext context, String message){
+    Utils().openDialog(BeautifulAlertDialog(
+      assetImage: 'assets/images/group_1336.png',
+      firstText:  'Booking Failed',
+      secondText:  message,
+      confirmText: 'Okay',),
+
+        context);
+
+
+  }
+
+
+   submitFetchBookingHistory(BuildContext context) async{
     Provider.of<BookingHistoryBackend>(context, listen: false)
         .fetchBookingHistory(userID);
 
   }
 
+  navigate(BuildContext context, bool success, String response) async {
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
+
+      if(success==true){
+        dialog(context);
+      }else{
+        failDialog(context, response);
+      }
+    });
+  }
+
+
 
 
   @override
   Widget build(BuildContext context) {
-
-     submitFetchBookingHistory() {
-      Provider.of<BookingHistoryBackend>(context, listen: false)
-          .fetchBookingHistory(userID);
-
-    }
-
-    navigate()async{
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-        dialog(context);
-      });
-
-
-    }
-
-
 
     return Center(
       child: Container(
@@ -92,7 +104,7 @@ class CarServicingPageFour extends StatelessWidget{
               ),
               Center(
                 child: Text(selectedServiceBusiness,
-                  style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w800),),
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w800),),
               ),
 
               SizedBox(
@@ -116,7 +128,7 @@ class CarServicingPageFour extends StatelessWidget{
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w200,
-                              fontSize: 16.0),
+                              fontSize: 14.0),
                         ),
                       ),
                     ],
@@ -133,7 +145,7 @@ class CarServicingPageFour extends StatelessWidget{
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w700,
-                      fontSize: 18.0),),
+                      fontSize: 14.0),),
               ),
 
               SizedBox(
@@ -147,13 +159,13 @@ class CarServicingPageFour extends StatelessWidget{
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w700,
-                          fontSize: 17.0),),
+                          fontSize: 16.0),),
 
                     Text('${mileage.toString()}',
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w200,
-                          fontSize: 17.0),),
+                          fontSize: 14.0),),
                   ],
                 ),
 
@@ -170,13 +182,13 @@ class CarServicingPageFour extends StatelessWidget{
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w700,
-                          fontSize: 17.0),),
+                          fontSize: 16.0),),
 
                     Text('${selectedTypeOfServicing.toString()}',
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w200,
-                          fontSize: 17.0),),
+                          fontSize: 14.0),),
                   ],
                 ),
 
@@ -195,13 +207,13 @@ class CarServicingPageFour extends StatelessWidget{
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w700,
-                          fontSize: 17.0),),
+                          fontSize: 16.0),),
 
                     Text('${selectedType.toString()}',
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w200,
-                          fontSize: 17.0),),
+                          fontSize: 14.0),),
                   ],
                 ),
 
@@ -218,13 +230,13 @@ class CarServicingPageFour extends StatelessWidget{
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w700,
-                          fontSize: 17.0),),
+                          fontSize: 16.0),),
 
                     Text('${selectedModel.toString()}',
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w200,
-                          fontSize: 17.0),),
+                          fontSize: 14.0),),
                   ],
                 ),
 
@@ -240,11 +252,10 @@ class CarServicingPageFour extends StatelessWidget{
                   height: 50.0,
                   onPressed: () async {
                     Utils().openDialog(LoaderTwo(), context);
-                    await submitServicingService(context).whenComplete(submitFetchBookingHistory);
-                    navigate();
+                    await submitServicingService(context).whenComplete(submitFetchBookingHistory(context));
                   },
                   child: Text('Submit',
-                      style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                      style: TextStyle(color: Colors.white, fontSize: 16.0)),
                   color: MyColors.designColor,
                   padding: EdgeInsets.symmetric(
                     horizontal: 80.0,

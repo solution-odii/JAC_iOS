@@ -4,14 +4,31 @@ import 'package:jac/Constants/MyColors.dart';
 import 'package:jac/Screens/HomePage.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:jac/Utils/Loader.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 
-class CloseAppDialog extends StatelessWidget{
+class EmergencyResponseCallDialog extends StatelessWidget{
+
+  final String emergencyCenterName;
+  final String emergencyPhoneNumber;
+
+EmergencyResponseCallDialog(this.emergencyCenterName, this.emergencyPhoneNumber);
+
+void callMe() async {
+  var uri = 'tel:$emergencyPhoneNumber';
+  if (await canLaunch(uri)) {
+    await launch(uri);
+  } else {
+    throw 'Could not launch $uri';
+  }
+}
 
 
   @override
   Widget build(BuildContext context) {
+
+
     return Center(
       child: Dialog(
         elevation: 0,
@@ -26,28 +43,31 @@ class CloseAppDialog extends StatelessWidget{
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 40.0,
+                height: 20.0,
               ),
               Center(
-                child: Image(image: AssetImage("assets/images/group_54.png"),
-                  height: 50,
-                  width: 50,),
+                child: Image(image: AssetImage("assets/images/successimage.png"),
+                  height: 70,
+                  width: 70,),
               ),
 
               SizedBox(
-                height: 20,
+                height: 10,
               ),
               Center(
-                child: Text('Are you sure?',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22.0, color: Colors.black),),
+                child: Text('Emergency Request Sent',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0, color: Colors.black),),
               ),
 
               SizedBox(
-                height: 20,
+                height: 0.0,
               ),
-              Center(
-                child: Text('Do you want to exit App?',
-                  style: TextStyle(fontWeight: FontWeight.w100, fontSize: 14.0, color: Colors.black),),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Center(
+                  child: Text('You will recieve a response soon or you can contact ${emergencyCenterName.toUpperCase()} via ${emergencyPhoneNumber}',
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0, color: Colors.black),),
+                ),
               ),
 
               SizedBox(
@@ -59,8 +79,11 @@ class CloseAppDialog extends StatelessWidget{
                   children: <Widget>[
                     MaterialButton(
                       height: 50.0,
-                      onPressed:   () => Navigator.of(context).pop(false),
-                      child: Text('No',
+                      onPressed: () {
+                       callMe();
+
+                      },
+                      child: Text('Call',
                           style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w200)),
                       color: MyColors.designColor,
                       padding: EdgeInsets.symmetric(
@@ -76,12 +99,12 @@ class CloseAppDialog extends StatelessWidget{
 
                     MaterialButton(
                       height: 50.0,
-                      onPressed:
-                            () => Navigator.of(context).pop(true),
-
-                      child: Text('Yes',
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Okay',
                           style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w200)),
-                      color: MyColors.designColor,
+                      color: Colors.grey,
                       padding: EdgeInsets.symmetric(
                         horizontal: 40.0,
                       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Constants/MyColors.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:jac/Utils/Loader.dart';
 
@@ -280,7 +280,7 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
                            validationChecks();
                           },
                           child: Text('Continue',
-                              style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                              style: TextStyle(color: Colors.white, fontSize: 16.0)),
                           color: MyColors.designColor,
                           padding: EdgeInsets.symmetric(
                             horizontal: 102.0,
@@ -293,7 +293,7 @@ class CarRepairsPageTwoState extends State<CarRepairsPageTwo> {
                           ),
                         ),
 
-
+                        SizedBox(height: 10,)
 
                       ],
                     ),

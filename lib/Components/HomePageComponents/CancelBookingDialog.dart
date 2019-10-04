@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jac/Components/HomePageComponents/SelectedBookingHistory.dart';
-import 'package:jac/Constants/mycolors.dart';
-import 'package:jac/Screens/homePage.dart';
+import 'package:jac/Constants/MyColors.dart';
+import 'package:jac/Screens/HomePage.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:jac/Utils/Loader.dart';
 
@@ -45,28 +45,28 @@ class CancelAlertDialog extends StatelessWidget{
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 40.0,
+                height: 20.0,
               ),
               Center(
                 child: Image(image: AssetImage("assets/images/group_54.png"),
-                  height: 50,
-                  width: 50,),
+                  height: 100,
+                  width: 100,),
               ),
 
               SizedBox(
-                height: 20,
+                height: 10,
               ),
               Center(
                 child: Text('Ongoing Service',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22.0, color: Colors.black),),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24.0, color: Colors.black),),
               ),
 
               SizedBox(
-                height: 20,
+                height: 10,
               ),
               Center(
                 child: Text('Are you sure you want to cancel?',
-                  style: TextStyle(fontWeight: FontWeight.w100, fontSize: 14.0, color: Colors.black),),
+                  style: TextStyle(fontWeight: FontWeight.w100, fontSize: 16.0, color: Colors.black),),
               ),
 
               SizedBox(
@@ -103,7 +103,7 @@ class CancelAlertDialog extends StatelessWidget{
                       },
                       child: Text('No',
                           style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w200)),
-                      color: MyColors.designColor,
+                      color: Colors.grey,
                       padding: EdgeInsets.symmetric(
                         horizontal: 40.0,
                       ),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jac/Components/CarRepairsComponents/CarsRepairsPageOne.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageTwo.dart';
-import 'package:jac/Constants/mycolors.dart';
-import 'package:jac/Models/httpException.dart';
+import 'package:jac/Constants/MyColors.dart';
+import 'package:jac/Models/HttpException.dart';
 import 'package:jac/Providers/AuthenticationBackend.dart';
 import 'package:jac/Providers/BookingHistoryBackend.dart';
 import 'package:location/location.dart';
-import 'package:jac/Screens/registerScreen.dart';
+import 'package:jac/Screens/RegisterScreen.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:jac/Utils/Loader.dart';
 import 'package:local_auth/local_auth.dart';
@@ -171,7 +171,7 @@ class LoginScreenState extends State<LoginScreen> {
       keyboardType: TextInputType.emailAddress,
       cursorColor: Colors.white,
 
-      style: TextStyle(color: Colors.white, fontSize: 20.0),
+      style: TextStyle(color: Colors.white, fontSize: 16.0),
       validator: (value) {
         if (value.isEmpty || !value.contains('@')) {
           return 'Invalid Email';
@@ -196,7 +196,7 @@ class LoginScreenState extends State<LoginScreen> {
       cursorColor: Colors.white,
 
       obscureText: true,
-      style: TextStyle(color: Colors.white, fontSize: 20.0),
+      style: TextStyle(color: Colors.white, fontSize: 16.0),
       onSaved: (value) {
         _authData['password'] = value;
       },
@@ -293,7 +293,7 @@ class LoginScreenState extends State<LoginScreen> {
                             submitFetchRequest();
                           },
                           child: Text('LOGIN',
-                              style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                              style: TextStyle(color: Colors.white, fontSize: 16.0)),
                           color: MyColors.designColor,
                           padding: EdgeInsets.symmetric(
                             horizontal: 82.0,
@@ -349,7 +349,7 @@ class LoginScreenState extends State<LoginScreen> {
                           Text(
                             'New User?',
                             style:
-                                TextStyle(color: Colors.white, fontSize: 16.0),
+                                TextStyle(color: Colors.white, fontSize: 14.0),
                           ),
                           InkWell(
                             onTap: () {
@@ -366,7 +366,7 @@ class LoginScreenState extends State<LoginScreen> {
                                 'Register',
                                 style: TextStyle(
                                     color: MyColors.designColor,
-                                    fontSize: 18.0,
+                                    fontSize: 16.0,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),

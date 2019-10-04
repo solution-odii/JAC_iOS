@@ -6,10 +6,11 @@ import 'package:jac/Components/CarRepairsComponents/CarRepairsPageThree.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageFour.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageOne.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageThree.dart';
-import 'package:jac/Constants/constants.dart';
-import 'package:jac/Screens/homePage.dart';
-import 'package:jac/Screens/loginScreen.dart';
-import 'package:jac/Screens/registerScreen.dart';
+import 'package:jac/Components/EmergencyServiceComponents/CallEmergencyCenterDialog.dart';
+import 'package:jac/Constants/Constants.dart';
+import 'package:jac/Screens/HomePage.dart';
+import 'package:jac/Screens/LoginScreen.dart';
+import 'package:jac/Screens/RegisterScreen.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -113,6 +114,7 @@ class AuthenticateBackend with ChangeNotifier {
          CarRepairsPageFour.userID = userID;
          CarServicingPageOneState.userID = userID;
          CarServicingPageFour.userID = userID;
+         CallEmergencyCenterDialog.customerId = userID.toString();
          saveUserDetails();
 
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
@@ -159,6 +161,7 @@ class AuthenticateBackend with ChangeNotifier {
         CarRepairsPageFour.userID = userID;
         CarServicingPageOneState.userID = userID;
         CarServicingPageFour.userID = userID;
+        CallEmergencyCenterDialog.customerId = userID.toString();
         saveUserDetails();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
       }

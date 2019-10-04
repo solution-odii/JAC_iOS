@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageFour.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageThree.dart';
-import 'package:jac/Constants/constants.dart';
-import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Constants/Constants.dart';
+import 'package:jac/Constants/MyColors.dart';
 import 'package:jac/Providers/RepairBookingBackend.dart';
-import 'package:jac/Screens/homePage.dart';
+import 'package:jac/Screens/HomePage.dart';
 import 'package:intl/intl.dart' show DateFormat;
-import 'package:jac/Models/carsList.dart';
+import 'package:jac/Models/CarsList.dart';
 import 'package:jac/Providers/CarListBackend.dart';
 import 'package:jac/Providers/CarServiceCentersBackend.dart';
 import 'package:jac/Utils/DialogUtil.dart';
@@ -14,7 +14,7 @@ import 'package:jac/Utils/Loader.dart';
 import 'package:provider/provider.dart';
 import 'package:location/location.dart';
 import 'package:flutter/services.dart';
-import 'package:jac/Models/carServiceCenters.dart';
+import 'package:jac/Models/CarServiceCenters.dart';
 import 'package:jac/Providers/CarServiceCentersBackend.dart';
 import 'package:jac/Database/CarModelDB.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -107,7 +107,7 @@ class CarServicingPageTwoState extends State<CarServicingPageTwo> {
             Center(
               child: Text(
                 'Choose a Vehicle Brand',
-                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
               ),
             ),
             SizedBox(
@@ -122,9 +122,10 @@ class CarServicingPageTwoState extends State<CarServicingPageTwo> {
                       isVehicleBrandSelected = true;
                       selectedBrand = 'JAC_MOTORS';
                       selectedType = null;
-                      selectedModel =null;
+                       selectedModel =null;
                       CarsDatabase.carsDatabase.getVehicleType(selectedBrand);
                       CarServicingPageFour.selectedBrand = selectedBrand;
+                      submitFetchRequest();
                       loaderMan();
                     });
                   },
@@ -140,6 +141,7 @@ class CarServicingPageTwoState extends State<CarServicingPageTwo> {
                       selectedModel =null;
                       CarsDatabase.carsDatabase.getVehicleType(selectedBrand);
                       CarServicingPageFour.selectedBrand = selectedBrand;
+                      submitFetchRequest();
                       loaderMan();
                     });
                   },
@@ -159,7 +161,7 @@ class CarServicingPageTwoState extends State<CarServicingPageTwo> {
                 children: <Widget>[
                   Text(
                     'Choose Vehicle Type',
-                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w300),
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w300),
                   )
                 ],
               ),
@@ -220,7 +222,7 @@ class CarServicingPageTwoState extends State<CarServicingPageTwo> {
                 children: <Widget>[
                   Text(
                     'Choose Vehicle Model',
-                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w300),
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w300),
                   )
                 ],
               ),
@@ -277,7 +279,7 @@ class CarServicingPageTwoState extends State<CarServicingPageTwo> {
                 validationChecks();
               },
               child: Text('Continue',
-                  style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                  style: TextStyle(color: Colors.white, fontSize: 16.0)),
               color: MyColors.designColor,
               padding: EdgeInsets.symmetric(
                 horizontal: 102.0,
@@ -289,7 +291,7 @@ class CarServicingPageTwoState extends State<CarServicingPageTwo> {
                 ),
               ),
             ),
-
+            SizedBox(height: 10,)
           ],
           ),
         ),

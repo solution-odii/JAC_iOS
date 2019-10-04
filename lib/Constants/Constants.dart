@@ -1,6 +1,7 @@
 import 'package:jac/Models/BookingHistoryModel.dart';
-import 'package:jac/Models/carServiceCenters.dart';
-import 'package:jac/Models/carsList.dart';
+import 'package:jac/Models/CarServiceCenters.dart';
+import 'package:jac/Models/CarsList.dart';
+import 'package:jac/Models/EmergencyCentersModel.dart';
 
 class Constants {
   //static String baseURL = 'http://41.219.149.51:7080';
@@ -13,6 +14,8 @@ class Constants {
   static List<BookingHistoryModel> loadedBookingHistoryList = new List();
 
   static List<CarServiceCenters> loadedCarServiceCenters = new List();
+
+  static List<EmergencyCenterModel> loadedEmergencyCenters = new List();
 
   static List<CarTypes> carCodes = new List();
 

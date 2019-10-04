@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:jac/Components/CarServicingComponents/CarServicingPageFour.dart';
-import 'package:jac/Constants/mycolors.dart';
+import 'package:jac/Constants/MyColors.dart';
 import 'package:jac/Providers/CarServiceBookingBackend.dart';
 import 'package:jac/Utils/DialogUtil.dart';
 import 'package:jac/Utils/Loader.dart';
@@ -96,6 +96,8 @@ class CarServicingPageOneState extends State<CarServicingPageOne> with TickerPro
       Utils().showErrorDialog(context, 'Please Select Time');
     }else  if(mileage == null){
       Utils().showErrorDialog(context, 'Please Enter Mileage');
+    }else  if(recommendedService == 'Input is less than the previous mileage'){
+      Utils().showErrorDialog(context, 'Please Enter Mileage');
     }else  if(selectedServicingType == null){
       Utils().showErrorDialog(context, 'Please Select Type of Service');
     } else{
@@ -159,7 +161,7 @@ class CarServicingPageOneState extends State<CarServicingPageOne> with TickerPro
                   Center(
                     child: Text(
                       'Car Servicing',
-                      style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
+                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
                     ),
                   ),
 
@@ -296,11 +298,11 @@ class CarServicingPageOneState extends State<CarServicingPageOne> with TickerPro
                                   cursorColor: MyColors.designColor,
                                   keyboardType: TextInputType.number,
                                   maxLines: null,
-                                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),
+                                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400),
                                   decoration: InputDecoration(
                                     contentPadding: EdgeInsets.all(10.0),
                                     hintText: 'Input car mileage',
-                                    hintStyle: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),
+                                    hintStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400),
                                     border: InputBorder.none,
                                   ),
                                 ),
@@ -318,7 +320,7 @@ class CarServicingPageOneState extends State<CarServicingPageOne> with TickerPro
                           Center(
                             child: Text(
                               recommendedService.toString(),
-                              style: TextStyle(color: MyColors.designColor, fontSize: 22.0, fontWeight: FontWeight.w700),
+                              style: TextStyle(color: MyColors.designColor, fontSize: 16.0, fontWeight: FontWeight.w700),
                             ),
                           ),
 
@@ -385,7 +387,7 @@ class CarServicingPageOneState extends State<CarServicingPageOne> with TickerPro
                           validationChecks();
                             },
                             child: Text('Pick a Service',
-                                style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                                style: TextStyle(color: Colors.white, fontSize: 16.0)),
                             color: MyColors.designColor,
                             padding: EdgeInsets.symmetric(
                               horizontal: 102.0,
@@ -398,6 +400,8 @@ class CarServicingPageOneState extends State<CarServicingPageOne> with TickerPro
                             ),
                           ),
 
+
+                          SizedBox(height: 10,)
 
 
                         ],
